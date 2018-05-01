@@ -19,7 +19,7 @@ contract SafeMath {
 
     function safeAdd(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        require(c>=a && c>=b);
+        require(c >= a && c >= b);
         return c;
     }
 
@@ -40,13 +40,13 @@ contract Interruptible {
      *       not able to reflect invocation of functions
      *  @return the new state of the contract
      **/
-    function interruptContract() public returns(bool) {}
+    function interruptContract() public returns (bool) {}
 
     /** @dev Will turn the contract in running state and
      *       able to reflect invocation of functions
      *  @return the new state of the contract
      **/
-    function resumeContract() public returns (bool) { }
+    function resumeContract() public returns (bool) {}
 
 }
 
@@ -67,8 +67,13 @@ contract Token {
     /** @dev Will return available contributor's balance
      *  @return balance balance of contributor
      **/
-    function balanceOf(address holder) constant public returns(uint256) {
+    function balanceOf(address holder) constant public returns (uint256) {
         return contributors[holder]._balance;
+    }
+
+    /** @dev Will return the contract owner */
+    function getOwner() constant public returns (address) {
+        return owner;
     }
 
     /** @dev Will check for valid address
@@ -95,20 +100,30 @@ contract InterruptibleToken is Interruptible, Token {
     bool internal isRunning;
 
     function interruptContract()
-    public
-    isOwner
-    returns(bool) {
+        public
+        isOwner
+        returns (bool)
+    {
         isRunning = false;
         emit LogTokenInterrupted();
         return isRunning;
     }
 
     function resumeContract()
-    public
-    isOwner
-    returns (bool) {
+        public
+        isOwner
+        returns (bool)
+    {
         isRunning = true;
         emit LogTokenResumed();
+        return isRunning;
+    }
+
+    function getState()
+        public
+        constant
+        returns (bool)
+    {
         return isRunning;
     }
 
@@ -139,12 +154,12 @@ contract AmmountSplitter is SafeMath, InterruptibleToken {
         address firstRecipient,
         address secondRecipient
     )
-    public
-    ifRunning
-    payable
-    validAddress(firstRecipient)
-    validAddress(secondRecipient)
-    returns(bool)
+        public
+        ifRunning
+        payable
+        validAddress(firstRecipient)
+        validAddress(secondRecipient)
+        returns (bool)
     {
 
         if (owner == firstRecipient || owner == secondRecipient) {
