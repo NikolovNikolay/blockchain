@@ -168,9 +168,18 @@ contract AmmountSplitter is SafeMath, InterruptibleToken {
 
         uint256 split = safeHalf(msg.value);
         contributors[firstRecipient]._balance =
-        safeAdd(contributors[firstRecipient]._balance, split);
+            safeAdd(contributors[firstRecipient]._balance, split);
         contributors[secondRecipient]._balance =
-        safeAdd(contributors[secondRecipient]._balance, split);
+            safeAdd(contributors[secondRecipient]._balance, split);
+
+        // Check if the sum can not be split equally to two halves.
+        // If so add the remainder to the sender's balance in the
+        // contract
+        uint256 remainder = msg.value - (2 * split);
+        if (remainder > 0) {
+            contributors[msg.sender]._balance = 
+                safeAdd(contributors[msg.sender]._balance, remainder);
+        }
         emit LogSplitAmount(msg.sender, firstRecipient, secondRecipient, split);
         return true;
     }
