@@ -50,8 +50,8 @@ contract Interruptible {
 
 }
 
-/** @title Token wrapper with major components */
-contract Token {
+/** @title Base Contract wrapper with major components */
+contract BaseContract {
 
     // Holds the address of the owner
     address internal owner;
@@ -91,7 +91,7 @@ contract Token {
 }
 
 /** @title Interruptible token */
-contract InterruptibleToken is Interruptible, Token {
+contract InterruptibleToken is Interruptible, BaseContract {
 
     event LogTokenInterrupted();
     event LogTokenResumed();
